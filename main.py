@@ -156,10 +156,15 @@ EURASIA = [(-10, 36), (-9, 43), (-3, 48), (2, 51), (7, 55), (10, 59),
            (85, 74), (100, 76), (115, 73), (130, 72), (145, 72), (160, 70),
            (178, 65), (170, 60), (162, 56), (156, 52), (142, 55), (140, 48),
            (134, 43), (128, 38), (122, 38), (118, 30), (110, 20), (106, 10),
-           (100, 8), (96, 14), (90, 22), (86, 20), (80, 14), (76, 9),
-           (72, 20), (65, 25), (58, 26), (52, 28), (48, 30), (42, 31),
-           (36, 36), (30, 36), (24, 38), (20, 41), (14, 44), (8, 44),
-           (2, 43), (-2, 37), (-9, 37)]
+           (100, 8), (96, 14), (90, 22), (88, 21), (86, 19), (82, 16),
+           (80, 13), (77, 8), (77, 12), (75, 16), (72, 20), (68, 23),
+           (65, 25), (61, 25), (58, 26), (56, 24), (54, 17), (50, 15),
+           (46, 13), (43, 12), (42, 15), (40, 20), (39, 23), (36, 29),
+           (34, 31), (36, 36), (34, 38), (33, 41), (29, 41), (28, 44),
+           (31, 46), (36, 46), (39, 45), (41, 42), (38, 41), (36, 38),
+           (33, 36), (30, 36), (27, 36), (23, 37), (21, 39), (19, 42),
+           (15, 44), (12, 44), (8, 44), (5, 43), (3, 42), (0, 38),
+           (-2, 37), (-6, 36), (-9, 37)]
 BRITAIN = [(-5, 50), (-3, 53), (-5, 57), (-3, 58), (0, 53), (-1, 51)]
 JAPAN = [(130, 31), (133, 34), (136, 35), (139, 37), (141, 41), (143, 44),
          (141, 45), (139, 40), (136, 36), (132, 33)]
@@ -191,9 +196,9 @@ LAND = [NORTH_AMERICA, SOUTH_AMERICA, AFRICA, EURASIA, BRITAIN, JAPAN,
         NEW_GUINEA, SUMATRA, CUBA, ICELAND]
 
 # (number, lon, lat, nudge_x, nudge_y)
-PINS = [("1", 30.5, 50.4, 0, -6), ("2", 23.5, 53.9, -20, -2),
+PINS = [("1", 30.5, 50.4, 0, -6), ("2", 23.5, 53.9, -14, 4),
         ("3", 46.7, 24.7, 12, 2), ("4", 30.7, 36.9, 18, 2),
-        ("5", 4.35, 50.85, -12, 4), ("6", 34.5, 31.5, -8, 6),
+        ("5", 4.35, 50.85, -8, 6), ("6", 34.5, 31.5, -8, 6),
         ("7", 56.3, 26.6, 14, -4), ("8", 84.9, 19.3, 0, 0)]
 KEY = ["1  KYIV \u2014 3 bridges hit in the overnight barrage; 9 killed",
        "2  POLAND \u2014 Russian Kh-101 missile crashes in Poland",
@@ -225,16 +230,16 @@ REGIONS = [("NORTH AMERICA", "Army delays Iowa explosives blast"),
 
 GRID = [("BRUSSELS", "EU adopts \u20ac1bn in military aid for Ukraine"),
         ("LONDON", "UK pledges 1,000+ drones for Ukraine, \u00a3260m"),
-        ("BERLIN", "Europe ready for talks with Russia, leaders say"),
+        ("EUROPE", "Europe ready for talks with Russia, leaders say"),
         ("BERLIN", "Merz: Europe will not accept a new Yalta"),
         ("PARIS", "Depardieu and Houellebecq face sex inquiries"),
         ("TBILISI", "Georgia declares 22 Nov a day of mourning"),
         ("KHARKIV", "Russian drone hits a hospital; four hurt"),
         ("WASHINGTON", "Trump confirms he fired cyber chief Cairncross"),
-        ("WASHINGTON", "Trump threatens ban on AI data centres abroad"),
-        ("WASHINGTON", "Trump announces posthumous pardon for Pete Rose"),
+        ("WHITE HOUSE", "Trump threatens ban on AI data centres abroad"),
+        ("CINCINNATI", "Trump announces posthumous pardon for Pete Rose"),
         ("USA", "Sanctions hit Comancheros and 'Ndrangheta"),
-        ("USA", "Court limits agriculture chief's emails"),
+        ("USDA", "Court limits agriculture chief's emails"),
         ("TEXAS", "Execution takes more than an hour"),
         ("ANTALYA", "Panama threatens to block a weak COP31 deal"),
         ("SUDAN", "Drone strike kills 10 at a gold mine"),
@@ -263,13 +268,33 @@ def art_kyiv(dr, x, y):
         sx = x + rng.randint(4, w - 4)
         sy = y + rng.randint(2, 18)
         dr.ellipse([sx, sy, sx + 1, sy + 1], fill=(247, 243, 232))
+    # moon + glow ring, top right
+    dr.ellipse([x + 276, y - 2, x + 300, y + 22], outline=GOLD, width=1)
+    dr.ellipse([x + 282, y + 4, x + 294, y + 16], fill=(247, 243, 232))
     # skyline silhouette
     for bx, bh in ((0, 22), (26, 34), (58, 26), (92, 40), (128, 30),
                    (164, 36), (200, 24), (238, 32), (276, 26)):
         dr.rectangle([x + bx, y + h - 18 - bh, x + bx + 30, y + h - 18],
                      fill=SKYLINE)
+    # seeded lit windows (gold 1x2 dots) on the building rects
+    wrng = random.Random(SEED + 11)
+    for bx, bh in ((0, 22), (26, 34), (58, 26), (92, 40), (128, 30),
+                   (164, 36), (200, 24), (238, 32), (276, 26)):
+        top = y + h - 18 - bh
+        for wx in (bx + 5, bx + 13, bx + 21):
+            for wy in range(top + 4, y + h - 20, 7):
+                if wrng.random() < 0.45:
+                    dr.rectangle([x + wx, wy, x + wx, wy + 1],
+                                 fill=(232, 196, 90))
     # river
     dr.rectangle([x, y + h - 18, x + w, y + h], fill=STEEL)
+    # river reflection: short steel-light streaks under the blast
+    rrng = random.Random(SEED + 12)
+    for dx in (-16, -8, 0, 8, 16):
+        ry0 = y + h - 15
+        ry1 = ry0 + rrng.randint(5, 9)
+        dr.line([(x + 159 + dx, ry0), (x + 159 + dx, ry1)],
+                fill=(170, 200, 220), width=1)
     # bridge: deck + two arches, middle span broken by a blast
     dr.line([(x + 8, y + 44), (x + 150, y + 44)], fill=(247, 243, 232),
             width=3)
@@ -281,7 +306,8 @@ def art_kyiv(dr, x, y):
            fill=(247, 243, 232), width=2)
     dr.arc([x + 244, y + 26, x + 304, y + 46], 180, 360,
            fill=(247, 243, 232), width=2)
-    # blast where the middle span was
+    # blast where the middle span was (outer glow first, then core)
+    burst(dr, x + 159, y + 30, 21, (232, 196, 90))
     burst(dr, x + 159, y + 30, 13, GOLD)
     burst(dr, x + 159, y + 30, 7, RED)
     dr.text((x, y + h + 4), "The Dnipro at night: three spans hit",
@@ -292,16 +318,24 @@ def art_markets(dr, x, y):
     """A falling line: $111.50 open, $97.17 close, $88.91 day two."""
     w, h = 312, 62
     dr.rectangle([x, y, x + w, y + h], fill=PANEL, outline=INK, width=1)
-    # gridlines
+    pts = [(x + 18, y + 12), (x + 92, y + 34), (x + 166, y + 30),
+           (x + 240, y + 50), (x + 294, y + 54)]
+    # light-red area fill under the line
+    dr.polygon(pts + [(x + 294, y + 62), (x + 18, y + 62)],
+               fill=(232, 205, 205))
+    # gridlines (redrawn over the fill so they stay visible)
     for gy in (y + 14, y + 30, y + 46):
         dr.line([(x + 8, gy), (x + w - 8, gy)], fill=(226, 222, 210),
                 width=1)
-    pts = [(x + 18, y + 12), (x + 92, y + 34), (x + 166, y + 30),
-           (x + 240, y + 50), (x + 294, y + 54)]
     dr.line(pts, fill=RED, width=3)
     for px, py in pts:
         dr.ellipse([px - 4, py - 4, px + 4, py + 4], fill=RED,
                    outline=PANEL, width=1)
+    # y-axis labels (tiny gray, left, just above their gridlines)
+    dr.text((x + 2, y + 2), "$110", font=font("sans", 8), fill=GRAY)
+    dr.text((x + 2, y + 22), "$100", font=font("sans", 8), fill=GRAY)
+    dr.text((x + 2, y + 38), "$90", font=font("sans", 8), fill=GRAY)
+    dr.text((x + 24, y + 1), "$111.50", font=font("sans_b", 10), fill=INK)
     dr.text((x + 92, y + 38), "$97.17", font=font("sans_b", 10), fill=INK)
     dr.text((x + 236, y + 16), "$88.91", font=font("sans_b", 11), fill=RED)
     dr.text((x, y + h + 4), "ANT: open $111.50 \u2192 day-two close $88.91",
@@ -312,17 +346,30 @@ def art_cyclone(dr, x, y):
     """Spiral storm over a coastline, with wind arrows."""
     w, h = 312, 62
     dr.rectangle([x, y, x + w, y + h], fill=(214, 232, 240))
+    # two-tone sky: lighter band across the top
+    dr.rectangle([x, y, x + w, y + 20], fill=(228, 240, 246))
+    dr.text((x + 8, y + 4), "BAY OF BENGAL", font=font("sans", 8),
+            fill=STEEL)
     # coastline
     dr.polygon([(x + 210, y), (x + 236, y + 20), (x + 224, y + 42),
                 (x + 248, y + h), (x + w, y + h), (x + w, y)],
                fill=(216, 210, 189), outline=LANDLINE)
     dr.text((x + 252, y + 8), "ODISHA", font=font("sans_b", 10), fill=INK)
+    # landfall dot on the coastline at the spiral edge
+    dr.ellipse([x + 227, y + 27, x + 233, y + 33], fill=RED,
+               outline=(247, 243, 232), width=1)
     # spiral arms
     cx, cy = x + 96, y + 32
     for r, a0, a1 in ((34, 20, 300), (26, 60, 330), (18, 100, 350),
                       (10, 140, 380)):
         dr.arc([cx - r, cy - r, cx + r, cy + r], a0, a1, fill=BLUE, width=4)
     dr.ellipse([cx - 6, cy - 6, cx + 6, cy + 6], fill=RED)
+    # seeded rain dots around the spiral
+    rrng = random.Random(SEED + 3)
+    for _ in range(40):
+        rx = x + rrng.randint(6, 200)
+        ry = y + rrng.randint(4, 58)
+        dr.point((rx, ry), fill=(90, 140, 175))
     # wind arrows
     for ax, ay, dx in ((x + 150, y + 12, 18), (x + 158, y + 50, 18),
                        (x + 40, y + 52, -14)):
@@ -351,7 +398,7 @@ def render(out_path):
 
     # faint paper grain (seeded: identical every run), under everything
     grain = random.Random(SEED + 7)
-    for _ in range(2400):
+    for _ in range(6000):
         gx = grain.randint(0, W - 1)
         gy = grain.randint(96, H - 1)
         dr.point((gx, gy), fill=(238, 233, 220))
@@ -370,6 +417,8 @@ def render(out_path):
             fill=(247, 243, 232), anchor="ma")
     dr.text((927, 32), "FRI 20 NOV 2026", font=font("sans_b", 11),
             fill=(247, 243, 232), anchor="ma")
+    # thin gold rule under the masthead band
+    dr.line([(0, 94), (W, 94)], fill=GOLD, width=2)
 
     # ---------- three leads ----------
     colx = [28, 356, 684]
@@ -388,7 +437,7 @@ def render(out_path):
                  width=1)
     # stippled ocean (seeded: identical every run), drawn before land
     rng = random.Random(SEED)
-    for _ in range(260):
+    for _ in range(700):
         dx = MX + rng.randint(3, MW - 3)
         dy = MY + rng.randint(3, MH - 3)
         dr.ellipse([dx, dy, dx + 1, dy + 1], fill=MAPLINE)
@@ -402,6 +451,13 @@ def render(out_path):
     for poly in LAND:
         pts = [project(lon, lat) for lon, lat in poly]
         dr.polygon(pts, fill=LANDC, outline=LANDLINE)
+    # ocean labels in open water
+    dr.text((205, 398), "ATLANTIC OCEAN", font=font("sans", 9),
+            fill=MAPLINE)
+    dr.text((48, 428), "PACIFIC OCEAN", font=font("sans", 9),
+            fill=MAPLINE)
+    dr.text((395, 448), "INDIAN OCEAN", font=font("sans", 9),
+            fill=MAPLINE)
     for num, lon, lat, nx, ny in PINS:
         px, py = project(lon, lat)
         px, py = px + nx, py + ny
@@ -417,6 +473,14 @@ def render(out_path):
 
     # ---------- UTC timeline ----------
     kicker(dr, 28, 494, "THE DAY IN UTC \u2014 FIVE MOMENTS", 13)
+    # spine across the section with a red dot above each time column
+    # (y=511: measured — kicker glyphs end at 507, time-label glyphs
+    # start at 515, so the spine/dots sit in the clear 508..514 band;
+    # y=506 as first drafted struck through the kicker)
+    dr.line([(28, 511), (996, 511)], fill=INK, width=1)
+    for i in range(len(TIMES)):
+        x = 28 + i * 194
+        dr.ellipse([x + 1, 509, x + 7, 514], fill=RED)
     for i, (t, txt) in enumerate(TIMES):
         x = 28 + i * 194
         dr.text((x, 512), t, font=font("sans_b", 12), fill=RED)
@@ -458,8 +522,8 @@ def render(out_path):
     rule(dr, 28, 996, 990, 1)
     para(dr, 28, 996,
          "The Daily Globe  \u2022  Friday 20 November 2026  \u2022  45 "
-         "stories  \u2022  Sources: Reuters, AP, BBC, CNN, IMD, UN News, "
-         "Le Monde, WSJ, USA Today, Ukrinform",
+         "stories  \u2022  Sources: Reuters, BBC, CNN, USA Today, NPR, "
+         "WSJ, IMD, Ukrinform",
          font("sans", 11), 968, GRAY, center=True)
     dr.rectangle([0, 1016, W, H], fill=RED)
 

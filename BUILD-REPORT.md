@@ -79,6 +79,67 @@ in order:
 - All 45 stories listed with verification source and date in
   `STORIES.md`, including a "Deliberately NOT used" section.
 
+## Fix pass (21 Nov 2026)
+
+Visual audit of the v3 render (full size + 2x crops) found two
+faithfulness/cosmetic defects and several flat-craft weaknesses; all
+fixed in `main.py`, 45 stories/facts unchanged, order of the 24 grid
+cells unchanged.
+
+Defects fixed:
+
+- Grid dateline duplicates: BERLIN x2, WASHINGTON x3, USA x2.
+  Re-datelined in place — "Europe ready for talks with Russia" BERLIN
+  → EUROPE; "Trump threatens ban on AI data centres abroad" WASHINGTON
+  → WHITE HOUSE; "Trump announces posthumous pardon for Pete Rose"
+  WASHINGTON → CINCINNATI; "Court limits agriculture chief's emails"
+  USA → USDA. All 24 grid datelines now unique (verified by script).
+  Kept: BERLIN (Merz), WASHINGTON (cyber chief), USA (sanctions).
+- Footer credited AP, UN News and Le Monde — none of the 45 stories
+  cites them. Sources line is now "Reuters, BBC, CNN, USA Today, NPR,
+  WSJ, IMD, Ukrinform", all cited in STORIES.md.
+
+Craft changes:
+
+- Map: EURASIA polygon refined (Mediterranean notch, Black Sea indent,
+  India peninsula, Arabia bulge — 51 → 84 vertices); ocean stipple
+  260 → 700 dots; ocean labels added ("ATLANTIC OCEAN", "PACIFIC
+  OCEAN", "INDIAN OCEAN", sans 9 pt in open water); pins 2 and 5
+  nudged onto land ((-20,-2) → (-14,+4) and (-12,+4) → (-8,+6)),
+  minimum pin separation still ≥18 px (18.5 px, pins 3–7).
+- Kyiv: moon + gold glow ring top-right, seeded lit windows (gold 1x2)
+  on the skyline, steel-light river reflection streaks under the blast,
+  outer blast glow (r+8 lighter gold) before the core bursts.
+- Markets: light-red area fill (232,205,205) under the line, y-axis
+  labels $110/$100/$90 (sans 8, gray, left), "$111.50" label above the
+  open point.
+- Cyclone: two-tone sky (lighter top band), 40 seeded rain dots around
+  the spiral, "BAY OF BENGAL" label on the sea side, red landfall dot
+  on the coastline.
+- Paper: grain 2400 → 6000 dots; thin GOLD 2 px rule under the masthead
+  band (y=94).
+- Timeline: spine + red dot above each of the 5 time columns. NOTE:
+  the plan drafted the spine at y=506, but measurement showed the
+  kicker glyphs end at y=507 and the time-label glyphs start at y=515,
+  so y=506 struck through the kicker; the spine was placed at y=511
+  with dots spanning y=509..514, in the clear band, no collision with
+  either.
+
+Verification (21 Nov 2026 ~10:40 WIB):
+
+- `python3 main.py` run 3x on the final code (once in grader mode
+  `MAKEFUN_OUTPUT_DIR=/tmp/v3fix_out python3 -P -s main.py`):
+  byte-identical every time, `cmp` clean.
+  sha256 `c2c8eb43aa9fc9db56f8aa73b8c095aafd4b083190d82995862597340b26a7d5`
+  (185,659 bytes; up from 168,762 — below the aspirational 250–400 KB
+  range, since seeded 1 px grain/stipple compresses well, but all
+  planned craft changes are in).
+- Dimensions 1024×1024 RGB — under the 1 MiB limit.
+- Visual check (full PNG + 2x crops: masthead, leads, map, regions,
+  grid, footer, timeline): no duplicate grid dateline, no overflow
+  anywhere, pins separated and on land, footer sources correct,
+  timeline spine/dots clear of kicker and time labels.
+
 ## Repo gates
 
 - Repo: https://github.com/AndryXSad/news-image-20261120-v3
